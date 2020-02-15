@@ -28,6 +28,22 @@ class DoubleLinkList:
         if (newNode.next is not None):
             newNode.next.prev = newNode
 
+
+    def append(self, data):
+        newNode = Node(data)
+        newNode.next = None
+        if self.head is None:
+            self.head = newNode
+            newNode.prev = None
+        
+        node = self.head
+        while (node is not None):
+            print(node.data)
+            last = node
+            node = node.next
+        last.next = newNode
+        newNode.prev =  last
+
     def printlist(self):
         node = self.head
         while (node is not None):
@@ -46,4 +62,10 @@ if __name__ == "__main__":
     dlist.printlist()
     dlist.insert(dlist.head.next, 13)
     print("----------After Insert-----")
+    dlist.printlist()
+    dlist.append(33)
+    print("----------After 1st Append-----")
+    dlist.printlist()
+    dlist.append(35)
+    print("----------After 2nd Append-----")
     dlist.printlist()
