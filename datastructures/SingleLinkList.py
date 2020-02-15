@@ -89,4 +89,6 @@ if __name__ == "__main__":
     print("--------------------------")
     list.traversList()
     list.popElem("August")
-
+    print("------removing head----------")
+    list.popElem("January")
+    list.traversList()
