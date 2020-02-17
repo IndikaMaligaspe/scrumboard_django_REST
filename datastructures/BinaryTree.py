@@ -20,6 +20,23 @@ class Node:
                 else:
                     self.right.insert(data)
 
+    def findVal(self, data):
+        if self.data is None:
+            print("Empty tree!!")
+            return
+        if data < self.data:
+            if self.left is None:
+                print(str(data)+" Not Found !")
+                return
+            return self.left.findVal(data)
+        elif data > self.data:
+            if self.right is None:
+                print(str(data)+" not Found !")
+                return
+            return self.right.findVal(data)
+        else:
+            print("Data found {:1}".format(self.data))
+
 
     def printTree(self):
         if self.data:
@@ -37,5 +54,7 @@ if __name__ == "__main__":
     root.insert(8)
     root.insert(20)
     root.printTree()
+    root.findVal(16)
+    root.findVal(55)
 
 
