@@ -1,0 +1,28 @@
+{% load staticfiles %}
+<!DOCTYOE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Scrum</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <script src="{% static 'board/vendor/jquery.js' %}"></script>
+        <script src="{% static 'board/vedor/underscore.js' %}"></script>
+        <script src="{% static 'board/vendor/backbone.js' %}"></script>
+        <script id="config" type="text/json">
+            {   
+                "models": {},
+                "collections": {},
+                "views": {},
+                "router": null
+            }
+        </script>
+        <scripy src="{% static 'board/js/app.js' %}"></script>
+        <scripy src="{% static 'board/js/models.js' %}"></script>
+        <scripy src="{% static 'board/js/views.js' %}"></script>
+        <scripy src="{% static 'board/js/router.js' %}"></script>
+    </body>
+</html>
