@@ -1,16 +1,21 @@
-{% load staticfiles %}
+{% load static %}
 <!DOCTYOE html>
-<html>
+<html class="no-js">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <title>Scrum</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script type="text/html" id="home-template">
+            <h1>Welcome to my Scrum Board App</h1> 
+        </script>
     </head>
     <body>
+        <div id="content"></div>
+
         <script src="{% static 'board/vendor/jquery.js' %}"></script>
-        <script src="{% static 'board/vedor/underscore.js' %}"></script>
+        <script src="{% static 'board/vendor/underscore.js' %}"></script>
         <script src="{% static 'board/vendor/backbone.js' %}"></script>
         <script id="config" type="text/json">
             {   
@@ -20,9 +25,9 @@
                 "router": null
             }
         </script>
-        <scripy src="{% static 'board/js/app.js' %}"></script>
-        <scripy src="{% static 'board/js/models.js' %}"></script>
-        <scripy src="{% static 'board/js/views.js' %}"></script>
-        <scripy src="{% static 'board/js/router.js' %}"></script>
+        <script src="{% static 'board/js/app.js' %}"></script>
+        <script src="{% static 'board/js/models.js' %}"></script>
+        <script src="{% static 'board/js/views.js' %}"></script>
+        <script src="{% static 'board/js/router.js' %}"></script>
     </body>
 </html>
