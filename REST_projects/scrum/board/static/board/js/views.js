@@ -1,5 +1,5 @@
 (function ($, Backbone, _, app){
-    var TemplaView = Backbone.View.extend({
+    var TemplateView = Backbone.View.extend({
         templateName: '',
         initialize: function (){
             this.template = _.template($(this.templateName).html());
@@ -13,11 +13,11 @@
         getContext: function () { return{}; }
     });
 
-    var HomepageView = TemplaView.extend({
+    var HomepageView = TemplateView.extend({
         templateName: '#home-template'
     });
 
-    var FormView = TemplaView.extend({
+    var FormView = TemplateView.extend({
         events: {
             'submit form': 'submit'
         },
@@ -84,10 +84,25 @@
             app.session.save(data.token);
             this.trigger('login', data.token);
         }
-    }); 
-
-
+    });
+    
+    var HeaderView = TemplateView.extend({
+        tagName: 'header',
+        templateName: '#header-template',
+        events: {
+            'click a.logout': 'logout'
+        },
+        getContext: function () {
+            return {authenticated: app.session.authenticated()};
+        },
+        logout: function (event) {
+            event.preventDefault();
+            app.session.delete();
+            window.location = '/';
+        }
+    });
 
     app.views.HomepageView = HomepageView;
     app.views.LoginView = LoginView;
+    app.views.HeaderView = HeaderView;
 })(jQuery, Backbone, _, app);

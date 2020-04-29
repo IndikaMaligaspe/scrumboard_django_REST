@@ -45,7 +45,7 @@
         },
         save: function(token){
             this.set('token', token);
-            if (toekn == null){
+            if (token == null){
                 localStorage.removeItem('apiToken');
             }else{
                 localStorage.apiToken = token;
