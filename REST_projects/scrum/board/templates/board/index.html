@@ -11,6 +11,19 @@
         <link rel="stylesheet" href="{% static 'board/css/board.css' %}">
         <script type="text/html" id="home-template">
             <h1>Welcome to my Scrum Board App</h1> 
+            <h2>Your Sprints</h2>
+            <button calss="add" type="submit">Add Sprint</button>
+            <% if (sprints !== null) {%>
+                <div class="sprints">
+                    <% _.each(sprints.models, function (sprint) { %>
+                    <a href="#sprint/<%- sprint.get('id') %>" class="sprint">
+                        <%- sprint.get(name) %><br>
+                        <span>DUE BY <%- sprint.get('end') %></span>
+                    </a>
+                    <% }); %>
+            <% } else { %>
+                <h3 class="loading">Loading....</h3>
+            <% } %>
         </script>
         <script type="text/html" id="login-template">
             <form action="" method="post">

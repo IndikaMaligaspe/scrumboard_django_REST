@@ -67,4 +67,54 @@
         }
     });
     app.session = new Session();
+
+    // ----------------Extending Backbone defaults to map our API -----------------//
+
+    var BaseModel  = Backbone.Model.extend({
+        url: function () {
+            var links = this.get('links'),
+                url = links && links.self;
+            if (!url) {
+                url = Backbone.Model.prototype.url.call(this);
+            }
+            return url;
+        }
+    });
+
+    var BaseCollection = Backbone.Collection.extend({
+        parse: function (response) { 
+            this._next = response.next;
+            this._previous = response.previous;
+            this._count = response.count;
+            return response || [];
+        }
+    });
+
+    app.models.Sprint = BaseModel.extend({});
+    app.models.Task   = BaseModel.extend({});
+    app.models.User   = BaseModel.extend({
+        idAttributemodel: 'username'
+    });
+
+    app.collections.ready = $.getJSON(app.apiRoot);
+    app.collections.ready.done(function (data) { 
+         
+        app.collections.Sprints = BaseCollection.extend({
+            model: app.models.Sprint,
+            url: data.sprints
+        });
+        app.sprints = new app.collections.Sprints();
+
+        app.collections.Tasks = BaseCollection.extend({
+            model: app.models.Task,
+            url: data.tasks
+        });
+        app.tasks = new app.collections.Tasks();
+
+        app.collections.Users = BaseCollection.extend({
+            model: app.models.User,
+            url: data.users
+        });
+        app.users = new app.collections.Users(); 
+    }); 
 })(jQuery, Backbone, _, app);
