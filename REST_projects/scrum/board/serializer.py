@@ -21,7 +21,7 @@ class SprintSerializer(serializers.ModelSerializer):
         request = self.context['request']
         return {
             'self': reverse('sprint-detail', kwargs={'pk':obj.pk}, request=request),
-            # 'tasks':reverse('task-list', request=request) + '?sprint={}'.format(obj.pk)
+            'tasks':reverse('task-list', request=request) + '?sprint={}'.format(obj.pk)
         }
 
     def validate_end(self, attrs):

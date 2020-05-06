@@ -15,7 +15,8 @@
     
     var FormView = TemplateView.extend({
         events: {
-            'submit form': 'submit'
+            'submit form': 'submit',
+            'click button.cancel': 'done' 
         },
         errorTemplate: _.template('<span class="error"><%- msg %></span>'),
         clearErrors: function () {  
@@ -160,6 +161,56 @@
             window.location = '/';
         }
     });
+    var AddTaskView = FormView.extend({
+        templateName: '#new-task-template',
+        events: _.extend({'click button.cancel': 'done'}, 
+        FormView.prototype.events),
+        submit: function (event) {
+            var self = this,
+                attributes = {};
+            FormView.prototype.submit.apply(this, arguments);
+            attributes = this.serializeForm(this.form);
+            app.collections.ready.done(function (){
+                app.tasks.create(attributes, {
+                    wait: true,
+                    success: $.proxy(self.success, self),
+                    error: $.proxy(self.modelfailuer, self)
+                });
+            });
+        },
+        success: function (model, resp, options) {
+            this.done();
+        }
+    });
+
+    var StatusView = TemplateView.extend({
+        tagName: 'section',
+        className: 'status',
+        templateName: '#status-template',
+        events: {
+            'click button.add': 'renderAddForm'
+        },
+        initialize: function (options) {  
+            TemplateView.prototype.initialize.apply(this, arguments);
+            this.sprint = options.sprint;
+            this.status = options.status;
+            this.title = options.title;
+        },
+        getContext: function () {  
+            return {sprint: this.sprint, title: this.title};
+        },
+        renderAddForm: function (event) {  
+            var view = new AddTaskView(),
+                link = $(event.currentTarget);
+            event.preventDefault();
+            link.before(view.el);
+            link.hide();
+            view.render();
+            view.on('done', function() {
+                link.show();
+            });
+        }
+    });
 
     var SprintView = TemplateView.extend({
         templateName: '#sprint-template',
@@ -168,19 +219,63 @@
             TemplateView.prototype.initialize.apply(this, arguments);
             this.sprintId = options.sprintId;
             this.sprint = null;
-            app.collections.ready.done(function () { 
+            this.tasks = {};
+            this.statuses = {
+                unassigned: new StatusView({
+                    sprint: null, status: 1, title: 'Backlog'}),
+                todo: new StatusView({
+                    sprint: this.sprintId, status: 1, title: 'Not Started'}),
+                active: new StatusView({
+                    sprint: this.sprintId, status: 2, title: 'In Development'}),
+                testing: new StatusView({
+                    sprint: this.sprintId, status: 3, title: 'In Testing'}),
+                done: new StatusView({
+                    sprint: this.sprintId, status: 4, title: 'Completed'})
+            };
+            app.collections.ready.done(function () {
+                app.tasks.on('add',self.addTask, self); 
                 app.sprints.getOrFetch(self.sprintId).done(function (sprint) {  
                     self.sprint = sprint;
                     self.render();
+                    app.tasks.each(self.addTask, self);
+                    sprint.fetchTasks();
                 }).fail(function (sprint) {  
                     self.sprint = sprint;
                     self.sprint.invalid = true;
                     self.render();
                 });
+                app.tasks.getBacklog();
             });
         },
         getContext: function () {  
             return {sprint: this.sprint};
+        },
+            // console.log(this.tasks);
+        render: function () {
+                TemplateView.prototype.render.apply(this, arguments);
+                _.each(this.statuses, function (view, name) {
+                    $('.tasks', this.$el).append(view.el);
+                    view.delegateEvents();
+                    view.render();
+                }, this);
+                _.each(this.tasks, function (view, taskId) {
+                    var task = app.tasks.get(taskId);
+                    view.remove();
+                    this.tasks[taskId] = this.renderTask(task);
+                }, this);
+        }, 
+        addTask: function (task) {
+            if (task.inBacklog() || task.inSprint(this.sprint)){
+                this.tasks[task.get('id')] = task;
+                this.renderTask(task);
+            }
+        },
+        renderTask: function (task) {  
+            var column = task.statusClass(),
+                container = this.statuses[column],
+                html = _.template('<div><%- task.get("name") %></div>', {task: task});
+                console.log(task);
+            // $('.list', container.$el).append(html);
         }
     });
 

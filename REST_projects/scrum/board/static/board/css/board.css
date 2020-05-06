@@ -117,3 +117,37 @@ header nav a:hover {
     border: 1px solid #CCC;
     padding: 20px;
 }
+
+/* Tasks==================== */
+.tasks {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex; 
+    flex-flow: row wrap;    
+    align-items: strech;
+    overflow: scroll;
+}
+    
+.tasks.status {
+    background: #EEE;
+    border: 1px solid #CCC;
+    padding: 0 10px 15px 10px;
+    margin-right: 8px;
+    width: 17%;
+}
+    
+.tasks.status.list {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex; 
+    flex-flow: row wrap;    
+    flex-direction: row;    
+    justify-content: space-around;
+}
+.task-detailinput, .task-detailtextarea {
+    width: 90%;
+}
