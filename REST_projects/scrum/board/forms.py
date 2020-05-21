@@ -1,4 +1,5 @@
 import django_filters
+from django_filters import rest_framework as filters
 
 from django.contrib.auth import get_user_model
 
@@ -13,20 +14,19 @@ class NullFilter(django_filters.BooleanFilter):
         return qs
 
 
-class SprintFilter(django_filters.FilterSet):
+class SprintFilter(filters.FilterSet):
     
-    end_min = django_filters.DateFilter(name='end', lookup_type='gte')
-    end_max = django_filters.DateFilter(name='end', lookup_type='lte')
+    end = filters.DateFilter(lookup_expr='gte')
+    # end_max = filters.DateFilter(lookup_expr='lte')
     
     class Meta:
         model = Sprint
-        fields = ('end_min', 'end_max', )
+        fields = ('end', )
 
-class TaskFilter(django_filters.FilterSet):
-    backlog = NullFilter(name='sprint')
+class TaskFilter(filters.FilterSet):
     class Meta:
         model = Task
-        fields = ('sprint', 'status', 'assigned', 'backlog')
+        fields = ('sprint','assigned')
 
     def __init__(self, *args, ** kwargs):
         super().__init__(*args, **kwargs)

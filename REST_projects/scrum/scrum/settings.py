@@ -61,6 +61,10 @@ CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:3000'
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
+
 ROOT_URLCONF = 'scrum.urls'
 
 TEMPLATES = [

@@ -49,6 +49,7 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'description', 'sprint',  'status_display', 'status', 'order', 'assigned', 'started', 'due', 'completed', 'links',)
 
     def get_status_display(self, obj):
+        print(obj)
         return obj.get_status_display()
     
     def get_links(self, obj):

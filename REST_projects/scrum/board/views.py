@@ -1,8 +1,9 @@
 from django.contrib.auth import get_user_model
-from rest_framework import authentication, permissions, viewsets, filters
+from rest_framework import authentication, permissions, viewsets
 from .models import Sprint , Task
 from .serializer import SprintSerializer , TaskSerializer, UserSerializer
-from .forms import TaskFilter, SprintFilter
+from django_filters import rest_framework as filters
+from .forms import TaskFilter , SprintFilter
 
 User = get_user_model()
 
@@ -13,13 +14,6 @@ class DefaultMixins(object):
     ]
     
     permission_classes = [permissions.IsAuthenticated,]
-
-    filters_backend = (
-        # filters.DjangoFilterBackend,
-        filters.SearchFilter,
-        filters.OrderingFilter,
-    )    
-
     paginate_by =  25
     paginate_by_param = 'page_size'
     max_paginate_by = 100
@@ -36,8 +30,8 @@ class TaskViewSet(DefaultMixins, viewsets.ModelViewSet):
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     filter_class = TaskFilter
-    search_fields = ('name', 'description',)
-    oredring_fields = ('name','order','started','due','completed')
+    # search_fields = ('name', 'description',)
+    oredring_fields = ('order','name','started','due','completed')
 
 class UserViewSet(DefaultMixins, viewsets.ReadOnlyModelViewSet):
     lookup_field = User.USERNAME_FIELD
