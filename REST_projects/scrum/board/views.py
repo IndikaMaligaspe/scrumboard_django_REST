@@ -31,7 +31,7 @@ class TaskViewSet(DefaultMixins, viewsets.ModelViewSet):
     serializer_class = TaskSerializer
     filter_class = TaskFilter
     # search_fields = ('name', 'description',)
-    oredring_fields = ('order','name','started','due','completed')
+    oredring_fields = ('started','due','order','name',)
 
 class UserViewSet(DefaultMixins, viewsets.ReadOnlyModelViewSet):
     lookup_field = User.USERNAME_FIELD
