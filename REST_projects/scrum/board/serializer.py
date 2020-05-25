@@ -3,25 +3,28 @@ from rest_framework import serializers
 from rest_framework.reverse import reverse
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
-from .models import Sprint , Task
+from .models import Sprint , Task , Team
 
 User = get_user_model()
 
 
 
 class SprintSerializer(serializers.ModelSerializer):
-    
+    # users =  serializers.SlugRelatedField(
+    #    slug_field=User.USERNAME_FIELD, required=False, allow_null=True,
+    #    queryset=User.objects.all())
+        
     links = serializers.SerializerMethodField('get_links')
 
     class Meta:
         model = Sprint
-        fields = ('id','name','description','end','links')
+        fields = ('id','name','description','end','links', 'users')
     
     def get_links(self, obj):
         request = self.context['request']
         return {
             'self': reverse('sprint-detail', kwargs={'pk':obj.pk}, request=request),
-            'tasks':reverse('task-list', request=request) + '?sprint={}'.format(obj.pk)
+            'tasks':reverse('task-list', request=request) + '?sprint={}'.format(obj.pk),
         }
 
     def validate_end(self, attrs):
@@ -33,8 +36,27 @@ class SprintSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(msg)
         return attrs
 
+    def create(self, validated_data):
+        print(validated_data)
+        sprint = Sprint.objects.create(name=validated_data['name'], description = validated_data['description'], end = validated_data['end'])
+        sprint.users.add(self.context['request'].user)
+        sprint.save()
+        return sprint
 
-
+class TeamSerializer(serializers.ModelSerializer):
+    links = serializers.SerializerMethodField('get_links')
+  
+    class Meta:
+        model =  Team
+        fields = ('id', 'name', 'description', 'website', 'users', 'sprints', 'links')
+    
+    def get_links(self, obj):
+        request = self.context['request']
+        return {
+            'self': reverse('team-detail', kwargs={'pk':obj.pk}, request=request),
+            'sprints': reverse('sprint-list', request = request)+'?sprint={}'.format(obj.pk),
+            'users': reverse('user-detail', kwargs={User.USERNAME_FIELD:obj.pk}, request = request)
+        }
 
 class TaskSerializer(serializers.ModelSerializer):
     assigned = serializers.SlugRelatedField(
@@ -105,7 +127,7 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ('id',User.USERNAME_FIELD, 'full_name', 'is_active', 'links',)
+        fields = ('id',User.USERNAME_FIELD, 'password', 'first_name', 'last_name', 'full_name', 'email', 'is_active', 'links',)
     
     def get_links(self, obj):
         request = self.context['request']
@@ -113,4 +135,9 @@ class UserSerializer(serializers.ModelSerializer):
         return{
             'self': reverse('user-detail', kwargs={User.USERNAME_FIELD:username}, request=request),
             'tasks':'{}?assigned={}'.format(reverse('task-list',request=request), username)
-        }        
+        }       
+
+    def __init__(self, *args, **kwargs):
+        super(UserSerializer, self).__init__(*args, **kwargs)
+        if self.context['request'].method in {'GET'}:
+            self.fields.pop('password')
